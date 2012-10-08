@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">CameresActivity!</string>
+    <string name="app_name">Cameres</string>
+    <string name="button1">TakeAPic</string>
+    <string name="button2">StartAgain</string>
+    <string name="IVdesc">CameraView</string>
+
+</resources>
