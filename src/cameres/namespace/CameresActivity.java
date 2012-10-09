@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ import android.hardware.Camera.PictureCallback;
 
 public class CameresActivity extends Activity {
 	private static final int CAMERA_REQUEST = 1888;
-	private ImageView imageView;
+//	private ImageView imageView;
 	private TextView tview;
 //	private View topPanel;
 	String colorText ;
@@ -39,6 +40,7 @@ public class CameresActivity extends Activity {
 //    private CameraPreview mPreview;
 	private Bitmap bitmap ;
     private FrameLayout preview;
+    CameraPreview mPreview ;
 
 //	private SurfaceView surfaceView;
 //	private SurfaceHolder surfaceHolder;
@@ -68,12 +70,13 @@ public class CameresActivity extends Activity {
         getWindow().setFormat(PixelFormat.UNKNOWN);
         setContentView(R.layout.main);
         this.tview = (TextView) this.findViewById(R.id.textv1);
-        final CameraPreview mPreview = new CameraPreview(this);
+//        final CameraPreview mPreview = new CameraPreview(this);
+        mPreview = new CameraPreview(this);
         preview = (FrameLayout) findViewById(R.id.preview) ;
         preview.addView(mPreview); 
 //        ((ViewGroup) preview).addView(mPreview);
 //        mPreview = new CameraPreview(this, mCamera);
-        this.imageView = (ImageView) this.findViewById(R.id.result);
+//        this.imageView = (ImageView) this.findViewById(R.id.result);
 //		topPanel=findViewById(R.id.top_panel);
         Button button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +88,7 @@ public class CameresActivity extends Activity {
         	if (mPreview.isPreviewing() == true) {
         		mPreview.mCamera.takePicture(null, null, mPicture);
         	}
+        	mPreview.setPreviewing(false);
         }});
         
         Button button2 = (Button)findViewById(R.id.button2);
@@ -253,14 +257,18 @@ public class CameresActivity extends Activity {
 
         	bitmap =  (Bitmap) BitmapFactory.decodeByteArray(data, 0, data.length);
            	int x = bitmap.getWidth();
-           	int ymin = findcolorchange(bitmap, -1);
-           	int ymax = findcolorchange(bitmap,  1);
-           	Bitmap modbitmap = Bitmap.createBitmap(bitmap,x/4,ymin,x/2,ymax-ymin );
+//           	Bitmap modbitmap = Bitmap.createBitmap(bitmap,x/4,ymin,x/2,ymax-ymin );
+           	Rect mRect = mPreview.Rectangle();
+//           	Rect mRect = new Rect(300,150,500,250) ;
+           	Bitmap modbitmap = Bitmap.createBitmap(bitmap,mRect.left,
+           			mRect.top,mRect.width(),mRect.height() );
             	// modbitmap is a new bitmap with only the vertical center 1/3 of the image in it.
 //            	String colorText = "Red =" + red  + " Green = " + green + " Blue = " + blue ;
+           	int ymin = findcolorchange(modbitmap, -1);
+           	int ymax = findcolorchange(modbitmap,  1);
            	findcolors(modbitmap) ;
            	tview.setText(colorText);
-           	imageView.setImageBitmap(modbitmap);
+//           	imageView.setImageBitmap(modbitmap);
                 /*            InputStream stream = getContentResolver().openInputStream(data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 stream.close();

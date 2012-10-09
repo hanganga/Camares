@@ -4,7 +4,11 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.util.Log;
@@ -18,6 +22,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private int width, height;
     private Camera.Parameters parameters ;
     private boolean is_previewing = false ;
+    private final float left = 300, top = 150, right = 500, 
+    		            bottom = 250 ;
+    private Paint mPaint = new Paint() ;
+    private Rect  mRect  = new Rect() ;
 
     public CameraPreview(Context context) {
         super(context);
@@ -30,7 +38,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // deprecated setting, but required on Android versions prior to 3.0
         this.mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 //        mHolder.setSizeFromLayout();
-
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -40,6 +47,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             this.mCamera.setPreviewDisplay(this.getHolder());
             parameters = mCamera.getParameters();
 //            mCamera.startPreview();
+            if (mPaint == null) {
+            	mPaint = new Paint() ;
+            }
+            mPaint.setColor(Color.RED);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(5);
+            setWillNotDraw(false);
         }
         catch (Exception e){
             // Camera is not available (in use or does not exist)
@@ -80,6 +94,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public boolean isPreviewing() {
     	return is_previewing ;
     }
+    public void setPreviewing(boolean setvalue) {
+    	is_previewing = setvalue ;
+    }
     public void startPreview() {
         try {
 //          mCamera.setPreviewDisplay(mHolder);
@@ -112,4 +129,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
           Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
       }
     }    		
+    protected void onDraw(Canvas canvas) {
+        width = canvas.getWidth() ;
+        height = canvas.getHeight() ;
+        mRect.set(width/4, height/4, 3*width/4, height/2) ;
+        try {
+        	canvas.drawRect(left, top, right, bottom, mPaint);
+        } catch (Exception e){
+            Log.d(VIEW_LOG_TAG, "Error drawing rectangle: " + e.getMessage());
+          // ignore: tried to stop a non-existent preview
+        }
+        super.onDraw(canvas);
+    }
+    public Rect Rectangle() {
+    	if (mRect.isEmpty() )
+    			mRect.set(width/4, height/4, 3*width/4, height/2) ;
+    	return mRect ;
+    }
 }
