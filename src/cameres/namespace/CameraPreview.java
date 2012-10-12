@@ -110,6 +110,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
           };
           Camera.Parameters nparameters = parameters ;
           nparameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//          nparameters.setPreviewSize(width, height);
+//          nparameters.setPictureSize(width, height);
 //          parameters.setPreviewSize(width, height);
 //          parameters.setPictureFormat(PixelFormat.JPEG);
 /*          if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -130,11 +132,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
       }
     }    		
     protected void onDraw(Canvas canvas) {
-        width = canvas.getWidth() ;
-        height = canvas.getHeight() ;
-        mRect.set(width/4, height/4, 3*width/4, height/2) ;
+//        width = canvas.getWidth() ;
+//        height = canvas.getHeight() ;
+        mRect.set(width/3, height/3, 2*width/3, height/2) ;
         try {
-        	canvas.drawRect(left, top, right, bottom, mPaint);
+        	canvas.drawRect(mRect, mPaint);
         } catch (Exception e){
             Log.d(VIEW_LOG_TAG, "Error drawing rectangle: " + e.getMessage());
           // ignore: tried to stop a non-existent preview
@@ -143,7 +145,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
     public Rect Rectangle() {
     	if (mRect.isEmpty() )
-    			mRect.set(width/4, height/4, 3*width/4, height/2) ;
-    	return mRect ;
+    			mRect.set(width/3, height/3, 2*width/3, height/2) ;
+    	Camera.Size cSize = parameters.getPictureSize();
+    	float scalefactorx = (float)cSize.width  / (float)width ; 
+    	float scalefactory = (float)cSize.height / (float)height ; 
+    	Rect sizedRect   = new Rect();
+    	sizedRect.left   = (int) ((float) mRect.left  *scalefactorx);
+    	sizedRect.top    = (int) ((float) mRect.top   *scalefactory);
+    	sizedRect.right  = (int) ((float) mRect.right *scalefactorx);
+    	sizedRect.bottom = (int) ((float) mRect.bottom*scalefactory); 
+    	return sizedRect ;
     }
 }
