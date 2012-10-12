@@ -213,13 +213,19 @@ public class CameresActivity extends Activity {
       	  int run_avg = 0 ;
       	  for ( int i = 3 ; i < (xmax-3) ; i++ )
       	  {	
+      		  boolean forward = true ;
       		  int new_avg = absolute[i-2] + absolute[i-1] + absolute[i] +
       				  		absolute[i+1] + absolute[i+2] ; // average +/- 3 pixels
-      		  if ( ( new_avg > 200) && ( new_avg < run_avg ) ) { 
-      			  // major change = 200, direction change? not working
-      			  int tcolor = bitmap.getPixel(((i-xold)/2)+xold, ymax);
-      			  colorText += stringColor(tcolor) ;
-      			  xold = i ;
+      		  if  ( new_avg < run_avg )
+      		  {	  if ( ( run_avg > 200) && ( forward == true ) ) 
+      		  	  { //major change = 200, direction change? not working
+      				  int tcolor = bitmap.getPixel(((i-xold)/2)+xold, ymax);
+      				  colorText += stringColor(tcolor) ;
+      				  xold = i ;
+      				  forward = false ;
+      			  }
+      		  } else { // we're going positive again
+      			  forward = true ;
       		  }
       		  run_avg = new_avg;
       	  }
