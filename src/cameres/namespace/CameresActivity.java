@@ -195,24 +195,36 @@ public class CameresActivity extends Activity {
       	  int greennew = 0;
       	  int bluenew = 0 ;
       	  int xold = 0 ;
+      	  int absolute[] = new int[xmax];
+      	  absolute[0] = 0 ;
       	  for ( int i = 1 ; i < xmax ; i++ )
       	  {				
       		  int newcolor = bitmap.getPixel(i,ymax);
         	  rednew   = Color.red(newcolor) ;
           	  greennew = Color.green(newcolor) ;
           	  bluenew  = Color.blue(newcolor)  ;
-      		  int absolute = Math.abs(red - rednew) + 
+      		  absolute[i] = Math.abs(red - rednew) + 
       				  		 Math.abs(green - greennew) +
       				  		 Math.abs(blue - bluenew) ;
-      		  if ( absolute > 70 ) {
+  			  red = rednew ;
+  			  blue = bluenew;
+  			  green = greennew;
+      	  }
+      	  int run_avg = 0 ;
+      	  for ( int i = 3 ; i < (xmax-3) ; i++ )
+      	  {	
+      		  int new_avg = absolute[i-2] + absolute[i-1] + absolute[i] +
+      				  		absolute[i+1] + absolute[i+2] ; // average +/- 3 pixels
+      		  if ( ( new_avg > 200) && ( new_avg < run_avg ) ) { 
+      			  // major change = 200, direction change? not working
       			  int tcolor = bitmap.getPixel(((i-xold)/2)+xold, ymax);
       			  colorText += stringColor(tcolor) ;
-      			  red = rednew ;
-      			  blue = bluenew;
-      			  green = greennew;
       			  xold = i ;
       		  }
+      		  run_avg = new_avg;
       	  }
+		  int tcolor = bitmap.getPixel(((xmax-xold)/2)+xold, ymax); //get color for last stretch
+		  colorText += stringColor(tcolor) ;
       }
 
       private String stringColor(int tcolor) {
